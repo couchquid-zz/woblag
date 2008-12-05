@@ -1,4 +1,5 @@
 import web
+from time import time
 from web import form
 
 render = web.template.render('templates/')
@@ -37,7 +38,7 @@ addcomment_form = form.Form(
 
 class index:
 	def GET(self):
-		p = db.query("select id, title, body, (select count(*) from comment where belongs_to = post.id) as comment_count from post;")
+		p = db.query("select id, title, body, created, (select count(*) from comment where belongs_to = post.id) as comment_count from post;")
 		return render.index(p)
 
 class add:

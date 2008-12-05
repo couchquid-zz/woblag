@@ -1,6 +1,8 @@
 $def with (posts)
+
 $for post in posts:
 	<h2><a href="/post/$post.id">$post.title</a></h2>
+	<p>Posted at: $post.created</p>
 	<p>Comments($post.comment_count)</p>
 	<p>$post.body</p>
 	
