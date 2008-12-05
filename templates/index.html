@@ -1,10 +1,6 @@
 $def with (posts)
 $for blog in posts:
-	<h2>$blog.title</h2>
+	<h2><a href="/post/$blog.id">$blog.title</a></h2>
 	<p>$blog.body</p>
-
-<form method="post" action="add">
-	<p><label>Title: </label><input type="text" name="title" /></p>
-	<p><label>Text: </label><textarea name="body" /></textarea></p><br />
-	<input type="submit" value="Add" />
-</form>
+	
+<a href="add">Add a new post</a>

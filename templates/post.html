@@ -2,3 +2,5 @@ $def with (posts)
 $for blog in posts:
 	<h2>$blog.title</h2>
 	<p>$blog.body</p>
+	
+	<h5><a href="/post/$blog.id/edit">Edit</a> - <a href="/post/$blog.id/delete">Delete</a></h5>

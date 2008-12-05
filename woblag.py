@@ -4,9 +4,8 @@ render = web.template.render('templates/')
 urls = (
 	'/', 'index',
 	'/add', 'add',
-	'/edit/(\d+)', 'edit',
-	'/edit', 'edit',
 	'/post/(\d+)', 'post',
+	'/post/(\d+)/edit', 'edit',
 	'/post/(\d+)/delete', 'delete',
 )
 
@@ -16,10 +15,14 @@ db = web.database(dbn='mysql', user='root', pw='', db='woblag_development')
 
 class index:
 	def GET(self):
-		posts = db.select('blog')
-		return render.index(posts)
+		p = db.select('blog')
+		return render.index(p)
 
 class add:
+	def GET(self):
+		p = db.select('blog')
+		return render.add(p)
+		
 	def POST(self):
 		i = web.input()
 		n = db.insert('blog', title=i.title, body=i.body)
