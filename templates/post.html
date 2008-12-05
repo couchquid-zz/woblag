@@ -1,4 +1,4 @@
-$def with (posts, comments)
+$def with (posts, comments, form)
 $for post in posts:
 	<h2>$post.title</h2>
 	<p>$post.body</p>
@@ -12,7 +12,11 @@ $for post in posts:
 
 	<h3>Comment on this post</h3>
 	<form action="/post/$post.id/comment" method="post">
-		<p><label>Name: </label><input type="text" name="author" /></p>
-		<p><label>Text: </label><textarea name="body"></textarea></p><br />
+		$if not form.valid: <p class="error">Try again</p>
+		$:form.render()
 		<input type="submit" value="Post comment" />
 	</form>
+	<!--
+		<p><label>Name: </label><input type="text" name="author" /></p>
+		<p><label>Text: </label><textarea name="body"></textarea></p><br />
+	-->

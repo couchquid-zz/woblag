@@ -1,6 +1,11 @@
-$def with (posts)
+$def with (posts, form)
 	<form method="post" action="add">
-		<p><label>Title: </label><input type="text" name="title" /></p>
-		<p><label>Text: </label><textarea name="body" /></textarea></p><br />
+		$if not form.valid: <p class="error">Try again</p>
+		$:form.render()
 		<input type="submit" value="Add" />
 	</form>
+	
+<!--
+	<p><label>Title: </label><input type="text" name="title" /></p>
+	<p><label>Text: </label><textarea name="body" /></textarea></p><br />
+-->
