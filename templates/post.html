@@ -1,6 +1,18 @@
-$def with (posts)
-$for blog in posts:
-	<h2>$blog.title</h2>
-	<p>$blog.body</p>
+$def with (posts, comments)
+$for post in posts:
+	<h2>$post.title</h2>
+	<p>$post.body</p>
 	
-	<h5><a href="/post/$blog.id/edit">Edit</a> - <a href="/post/$blog.id/delete">Delete</a></h5>
+	<h5><a href="/post/$post.id/edit">Edit</a> - <a href="/post/$post.id/delete">Delete</a></h5>
+
+	<h3>Comments for this post</h3>
+	$for comment in comments:
+		<h4>$comment.author - <a href="/post/$post.id/comment/$comment.id/delete">[Delete]</a></h4>
+		<p>$comment.body</p>
+
+	<h3>Comment on this post</h3>
+	<form action="/post/$post.id/comment" method="post">
+		<p><label>Name: </label><input type="text" name="author" /></p>
+		<p><label>Text: </label><textarea name="body"></textarea></p><br />
+		<input type="submit" value="Post comment" />
+	</form>

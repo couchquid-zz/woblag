@@ -1,7 +1,7 @@
 $def with (posts)
-$for blog in posts:
-	<form method="post" action="/post/$blog.id/edit">
-		<p><label>Title: </label><input type="text" name="title" value="$blog.title" /></p>
-		<p><label>Text: </label><textarea name="body" />$blog.body</textarea></p><br />
+$for post in posts:
+	<form method="post" action="/post/$post.id/edit">
+		<p><label>Title: </label><input type="text" name="title" value="$post.title" /></p>
+		<p><label>Text: </label><textarea name="body" />$post.body</textarea></p><br />
 		<input type="submit" value="Edit" />
 	</form>

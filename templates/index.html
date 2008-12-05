@@ -1,6 +1,7 @@
 $def with (posts)
-$for blog in posts:
-	<h2><a href="/post/$blog.id">$blog.title</a></h2>
-	<p>$blog.body</p>
+$for post in posts:
+	<h2><a href="/post/$post.id">$post.title</a></h2>
+	<p>Comments($post.comment_count)</p>
+	<p>$post.body</p>
 	
-<a href="add">Add a new post</a>
+<a href="/post/add">Add a new post</a>
