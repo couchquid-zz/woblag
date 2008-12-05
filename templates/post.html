@@ -1,13 +1,20 @@
 $def with (posts, comments, form)
+<script style="text/javascript">
+function confirmDelete(link) {
+    if (confirm("Are you sure you want to delete this post?")) {
+        document.location = link;
+    } 
+}
+</script>
 $for post in posts:
 	<h2>$post.title</h2>
 	<p>$post.body</p>
 	
-	<h5><a href="/post/$post.id/edit">Edit</a> - <a href="/post/$post.id/delete">Delete</a></h5>
+	<h5><a href="/post/$post.id/edit">Edit</a> - <a href="#" onClick="confirmDelete('/post/$post.id/delete')">Delete</a></h5>
 
 	<h3>Comments for this post</h3>
 	$for comment in comments:
-		<h4>$comment.author - <a href="/post/$post.id/comment/$comment.id/delete">[Delete]</a></h4>
+		<h4>$comment.author - <a href="#" onClick="confirmDelete('/post/$post.id/comment/$comment.id/delete')">[Delete]</a></h4>
 		<p>$comment.body</p>
 
 	<h3>Comment on this post</h3>
