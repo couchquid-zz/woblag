@@ -16,11 +16,11 @@ urls = (
 	'/post/(\d+)/comment/(\d+)/delete', 'comment_delete',
 )
 
-#Config
+#config
 app = web.application(urls, locals())
 db = web.database(dbn='mysql', user='root', pw='', db='woblag_development')
 
-#Work around for creating a session
+#work around for creating a session
 if web.config.get('_session') is None:
 	session = web.session.Session(app, web.session.DiskStore('sessions'), initializer={'user': 'anonymous'})
 	web.config._session = session
@@ -32,7 +32,7 @@ password = "3da541559918a808c2402bba5012f6c60b27661c"
 
 class index:
 	def GET(self):
-		p = db.query("select id, title, body, created, (select count(*) from comment where belongs_to = post.id) as comment_count from post;")
+		p = db.query("SELECT id, title, body, created, (SELECT count(*) FROM comment WHERE belongs_to = post.id) AS comment_count FROM post ORDER BY created DESC;")
 		return render.index(p, session.user)
 
 class add:
