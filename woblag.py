@@ -33,7 +33,7 @@ password = "3da541559918a808c2402bba5012f6c60b27661c"
 class index:
 	def GET(self):
 		p = db.query("select id, title, body, created, (select count(*) from comment where belongs_to = post.id) as comment_count from post;")
-		return render.index(p)
+		return render.index(p, session.user)
 
 class add:
 	
@@ -90,12 +90,15 @@ class post:
 		form = self.addcomment_form
 		p = db.select('post', where="id=$post_id", vars=locals())
 		c = db.select('comment', where="belongs_to=$post_id", vars=locals())
-		return render.post(p,c,form)
+		return render.post(p,c,form,session.user)
 		
 class delete:
 	def GET(self, post_id):
-		n = db.delete('post', 'id = '+post_id)
-		raise web.seeother('/')
+		if session.user == 'admin':
+			n = db.delete('post', 'id = '+post_id)
+			raise web.seeother('/')
+		else:
+			return "You don't have access to this."
 
 class comment:
 	def POST(self, post_id):
@@ -111,8 +114,11 @@ class comment:
 
 class comment_delete:
 	def GET(self, post_id, comment_id):
-		n = db.delete('comment', 'id ='+comment_id)
-		raise web.seeother('/post/'+post_id)
+		if session.user == 'admin':
+			n = db.delete('comment', 'id ='+comment_id)
+			raise web.seeother('/post/'+post_id)
+		else:
+			return "You don't have access to this."
 		
 class login:
 	
@@ -143,4 +149,5 @@ class logout:
 		session.kill()
 		raise web.seeother('/')
 		
-if __name__ == "__main__": app.run()
+if __name__ == "__main__":
+	app.run()

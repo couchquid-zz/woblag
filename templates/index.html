@@ -1,4 +1,4 @@
-$def with (posts)
+$def with (posts, user)
 
 $for post in posts:
 	<h2><a href="/post/$post.id">$post.title</a></h2>
@@ -6,5 +6,8 @@ $for post in posts:
 	<p>Comments($post.comment_count)</p>
 	<p>$post.body</p>
 	
-<a href="/post/add">Add a new post</a> | 
-<a href="/login">Login</a>
+$if user == 'admin':
+	<a href="/post/add">Add a new post</a> | 
+	<a href="/logout">Logout</a>
+$else:
+	<a href="/login">Login</a>
