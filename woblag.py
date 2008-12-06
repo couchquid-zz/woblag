@@ -41,11 +41,11 @@ class add:
 	
 	def GET(self):
 		p = db.select('post')
-		form = addpost_form
+		form = self.addpost_form
 		return render.add(p, form)
 		
 	def POST(self):
-		form = addpost_form
+		form = self.addpost_form
 		if not form.validates():
 			p = db.select('post')
 			return render.add(p, form)
