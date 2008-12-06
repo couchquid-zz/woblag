@@ -1,7 +1,11 @@
-$def with (form)
+$def with (user, form)
+$if user == 'anonymous':
 	<p>You are not logged in.</p>
 	<form method="post" action="login">
 		$if not form.valid: <p class="error">Try again</p>
 		$:form.render()
 		<input type="submit" value="Login" />
 	</form>
+$else:
+	<p>You are logged in as: $user</p>
+	<p><a href="./logout">Logout</a></p>

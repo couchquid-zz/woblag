@@ -7,6 +7,7 @@ render = web.template.render('templates/')
 urls = (
 	'/', 'index',
 	'/login', 'login',
+	'/logout', 'logout',
 	'/post/add', 'add',
 	'/post/(\d+)', 'post',
 	'/post/(\d+)/edit', 'edit',
@@ -16,12 +17,18 @@ urls = (
 )
 
 #Config
-app = web.application(urls, globals())
+app = web.application(urls, locals())
 db = web.database(dbn='mysql', user='root', pw='', db='woblag_development')
+
+#Work around for creating a session
+if web.config.get('_session') is None:
+	session = web.session.Session(app, web.session.DiskStore('sessions'), initializer={'user': 'anonymous'})
+	web.config._session = session
+else:
+	session = web.config._session
 
 username = "admin"
 password = "3da541559918a808c2402bba5012f6c60b27661c"
-
 
 class index:
 	def GET(self):
@@ -92,7 +99,7 @@ class delete:
 
 class comment:
 	def POST(self, post_id):
-		form = addcomment_form()
+		form = post.addcomment_form()
 		if not form.validates():
 			p = db.select('post', where="id=$post_id", vars=locals())
 			c = db.select('comment', where="belongs_to=$post_id", vars=locals())
@@ -121,13 +128,19 @@ class login:
 	
 	def GET(self):
 		form = self.login_form()
-		return render.login(form)
+		return render.login(session.user, form)
 	
 	def POST(self):
 		form = self.login_form()
 		if not form.validates():
-			return render.login(form)
+			return render.login(session.user, form)
 		else:
-			raise web.seeother('/')
+			session.user = form['username'].value
+			return render.login(session.user, form)
+
+class logout:
+	def GET(self):
+		session.kill()
+		raise web.seeother('/')
 		
 if __name__ == "__main__": app.run()
