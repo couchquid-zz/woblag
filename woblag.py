@@ -1,11 +1,12 @@
 import web
-from time import time
 from web import form
+from hashlib import sha1
 
 render = web.template.render('templates/')
 
 urls = (
 	'/', 'index',
+	'/login', 'login',
 	'/post/add', 'add',
 	'/post/(\d+)', 'post',
 	'/post/(\d+)/edit', 'edit',
@@ -14,27 +15,13 @@ urls = (
 	'/post/(\d+)/comment/(\d+)/delete', 'comment_delete',
 )
 
+#Config
 app = web.application(urls, globals())
-
 db = web.database(dbn='mysql', user='root', pw='', db='woblag_development')
 
-addpost_form = form.Form(
-	form.Textbox("title",
-		form.notnull,
-	),
-	form.Textarea("body",
-		form.notnull,
-	),
-)
+username = "admin"
+password = "3da541559918a808c2402bba5012f6c60b27661c"
 
-addcomment_form = form.Form(
-	form.Textbox("author",
-		form.notnull,
-	),
-	form.Textarea("body",
-		form.notnull,
-	),
-)
 
 class index:
 	def GET(self):
@@ -42,13 +29,23 @@ class index:
 		return render.index(p)
 
 class add:
+	
+	addpost_form = form.Form(
+		form.Textbox("title",
+			form.notnull,
+		),
+		form.Textarea("body",
+			form.notnull,
+		),
+	)
+	
 	def GET(self):
 		p = db.select('post')
 		form = addpost_form
 		return render.add(p, form)
 		
 	def POST(self):
-		form = addpost_form()
+		form = addpost_form
 		if not form.validates():
 			p = db.select('post')
 			return render.add(p, form)
@@ -68,6 +65,16 @@ class edit:
 		raise web.seeother('/')
 
 class post:
+	
+	addcomment_form = form.Form(
+		form.Textbox("author",
+			form.notnull,
+		),
+		form.Textarea("body",
+			form.notnull,
+		),
+	)
+	
 	def GET(self, post_id):
 		form = addcomment_form
 		p = db.select('post', where="id=$post_id", vars=locals())
@@ -95,5 +102,28 @@ class comment_delete:
 	def GET(self, post_id, comment_id):
 		n = db.delete('comment', 'id ='+comment_id)
 		raise web.seeother('/post/'+post_id)
+		
+class login:
+	
+	login_form = form.Form(
+		form.Textbox("username",
+			form.Validator("Unknown username.", lambda x: x in username),
+			description="Username:"),
+		form.Password("password",
+			description="Password:"),
+		validators = [form.Validator("Username and password did not match.",
+					lambda i: i.username in username and sha1(i.password).hexdigest() in password)]
+	)
+	
+	def GET(self):
+		form = self.login_form()
+		return render.login(form)
+	
+	def POST(self):
+		form = self.login_form()
+		if not form.validates():
+			return render.login(form)
+		else:
+			raise web.seeother('/')
 		
 if __name__ == "__main__": app.run()

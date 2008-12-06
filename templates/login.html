@@ -1,0 +1,7 @@
+$def with (form)
+	<p>You are not logged in.</p>
+	<form method="post" action="login">
+		$if not form.valid: <p class="error">Try again</p>
+		$:form.render()
+		<input type="submit" value="Login" />
+	</form>
