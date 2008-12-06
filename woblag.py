@@ -33,9 +33,11 @@ class add:
 	addpost_form = form.Form(
 		form.Textbox("title",
 			form.notnull,
+			description="Title:",
 		),
 		form.Textarea("body",
 			form.notnull,
+			description="Text:",
 		),
 	)
 	
@@ -69,9 +71,11 @@ class post:
 	addcomment_form = form.Form(
 		form.Textbox("author",
 			form.notnull,
+			description="Name:",
 		),
 		form.Textarea("body",
 			form.notnull,
+			description="Text:",
 		),
 	)
 	
