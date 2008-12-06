@@ -76,7 +76,7 @@ class post:
 	)
 	
 	def GET(self, post_id):
-		form = addcomment_form
+		form = self.addcomment_form
 		p = db.select('post', where="id=$post_id", vars=locals())
 		c = db.select('comment', where="belongs_to=$post_id", vars=locals())
 		return render.post(p,c,form)
