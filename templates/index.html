@@ -1,12 +1,18 @@
-$def with (posts, user)
+$def with (posts, comments, user, next_page, previous_page)
 
 <h1>Woblag</h1>
 $for post in posts:
 	<h2><a href="/post/$post.id">$post.title</a></h2>
 	<p>Posted at: $post.created</p>
-	<p>Comments($post.comment_count)</p>
+	<p>Comments()</p>
 	<p>$post.body</p>
+
+$if next_page != None:
+	<a href="/page/$next_page">Next page</a>
+$if previous_page != None:
+	 <a href="/page/$previous_page">Previous page</a>
 	
+<br />
 $if user == 'admin':
 	<a href="/post/add">Add a new post</a> | 
 	<a href="/logout">Logout</a>

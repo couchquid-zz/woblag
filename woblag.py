@@ -6,6 +6,7 @@ render = web.template.render('templates/')
 
 urls = (
 	'/', 'index',
+	'/page/([0-9])*', 'index',
 	'/login', 'login',
 	'/logout', 'logout',
 	'/post/add', 'add',
@@ -31,9 +32,18 @@ username = "admin"
 password = "3da541559918a808c2402bba5012f6c60b27661c"
 
 class index:
-	def GET(self):
-		p = db.query("SELECT id, title, body, created, (SELECT count(*) FROM comment WHERE belongs_to = post.id) AS comment_count FROM post ORDER BY created DESC LIMIT 5;")
-		return render.index(p, session.user)
+	def GET(self, page=0):
+		#pagination
+		page = 0 if not page else int(page)
+		num_of_posts = db.query("SELECT COUNT(*) AS count FROM post")[0].count
+		offset = page * 5
+		
+		next_page = page + 1 if (page + 1) * 5 < num_of_posts else None
+		previous_page = page - 1 if page > 0 else None
+		
+		p = db.select("post", order="created DESC", limit=5, offset=offset)
+		comments = db.query("SELECT id, (SELECT COUNT(*) FROM comment WHERE belongs_to = post.id) AS comment_count FROM post;")
+		return render.index(p, comments, session.user, next_page, previous_page)
 
 class add:
 	
