@@ -19,6 +19,7 @@ $for post in posts:
 		<h4>$comment.author
 		$if user == 'admin':
 			 - <a href="#" onClick="confirmDelete('/post/$post.id/comment/$comment.id/delete')">[Delete]</a></h4>
+		<p>$comment.created</p>
 		<p>$comment.body</p>
 
 	<h3>Comment on this post</h3>

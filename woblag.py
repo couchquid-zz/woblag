@@ -32,7 +32,7 @@ password = "3da541559918a808c2402bba5012f6c60b27661c"
 
 class index:
 	def GET(self):
-		p = db.query("SELECT id, title, body, created, (SELECT count(*) FROM comment WHERE belongs_to = post.id) AS comment_count FROM post ORDER BY created DESC;")
+		p = db.query("SELECT id, title, body, created, (SELECT count(*) FROM comment WHERE belongs_to = post.id) AS comment_count FROM post ORDER BY created DESC LIMIT 5;")
 		return render.index(p, session.user)
 
 class add:
@@ -89,7 +89,7 @@ class post:
 	def GET(self, post_id):
 		form = self.addcomment_form
 		p = db.select('post', where="id=$post_id", vars=locals())
-		c = db.select('comment', where="belongs_to=$post_id", vars=locals())
+		c = db.select('comment', where="belongs_to=$post_id", order="created DESC",vars=locals())
 		return render.post(p,c,form,session.user)
 		
 class delete:
