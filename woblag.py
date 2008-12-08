@@ -7,6 +7,7 @@ render = web.template.render('templates/')
 urls = (
 	'/', 'index',
 	'/page/([0-9])*', 'index',
+	'/archive/(\d+)/(\d+)', 'archive',
 	'/login', 'login',
 	'/logout', 'logout',
 	'/post/add', 'add',
@@ -101,6 +102,11 @@ class post:
 		p = db.select('post', where="id=$post_id", vars=locals())
 		c = db.select('comment', where="belongs_to=$post_id", order="created DESC",vars=locals())
 		return render.post(p,c,form,session.user)
+		
+class archive:
+	def GET(self, year, month):
+		p = db.select('post', where="created like $year and created like $month", order="created DESC", vars={'year':'%'+year+'%', 'month':'%'+month+'%'})
+		return render.archive(p, session.user)
 		
 class delete:
 	def GET(self, post_id):
