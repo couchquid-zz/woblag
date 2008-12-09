@@ -1,6 +1,5 @@
 $def with (posts, form)
-	<form method="post" action="add">
+	<form method="post" action="/post/create">
 		$if not form.valid: <p class="error">Try again</p>
 		$:form.render()
-		<input type="submit" value="Add" />
 	</form>

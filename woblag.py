@@ -7,16 +7,16 @@ render = web.template.render('templates/')
 
 urls = (
 	'/', 'index',
-	'/page/([0-9])*', 'index',
+	'/page/:([0-9])*', 'index',
 	'/archive/(\d+)/(\d+)', 'archive',
-	'/login', 'login',
-	'/logout', 'logout',
+	'/admin/login', 'login',
+	'/admin/logout', 'logout',
 	'/post/add', 'add',
-	'/post/(\d+)', 'post',
-	'/post/(\d+)/edit', 'edit',
-	'/post/(\d+)/delete', 'delete',
-	'/post/(\d+)/comment', 'comment',
-	'/post/(\d+)/comment/(\d+)/delete', 'comment_delete',
+	'/post/(\d+):([\a-z_]+)', 'post',
+	'/post/edit/:(\d+)', 'edit',
+	'/post/delete/:(\d+)', 'delete',
+	'/post/comment/:(\d+)', 'comment',
+	'/post/delete/comment/:(\d+)', 'comment',
 )
 
 #config
@@ -43,9 +43,9 @@ class index:
 		next_page = page + 1 if (page + 1) * 5 < num_of_posts else None
 		previous_page = page - 1 if page > 0 else None
 		
-		posts = db.select("post", order="created DESC", limit=5, offset=offset)
-		posts_full = db.select('post')
-		comments = db.query("SELECT id, (SELECT COUNT(*) FROM comment WHERE belongs_to = post.id) AS comment_count FROM post;")
+		posts = db.select('post', order='created DESC', limit=5, offset=offset, vars=locals())
+		posts_full = db.select('post', vars=locals())
+		comments = db.query('SELECT id, (SELECT COUNT(*) FROM comment WHERE belongs_to = post.id) AS comment_count FROM post;')
 		
 		#archives
 		monthyear = {}
@@ -59,40 +59,48 @@ class index:
 class add:
 	
 	addpost_form = form.Form(
-		form.Textbox("title",
-			form.notnull,
-			description="Title:",
-		),
-		form.Textarea("body",
-			form.notnull,
-			description="Text:",
-		),
+		form.Textbox("title", form.notnull, description="Title:"),
+		form.Textarea("body", form.notnull, description="Text:"),
+		form.Button("submit", type="submit", description="Add post"),
 	)
 	
 	def GET(self):
-		p = db.select('post')
+		posts = db.select('post', vars=locals())
 		form = self.addpost_form
-		return render.add(p, form)
+		return render.add(posts, form)
 		
 	def POST(self):
 		form = self.addpost_form
 		if not form.validates():
-			p = db.select('post')
-			return render.add(p, form)
+			posts = db.select('post', vars=locals())
+			return render.add(posts, form)
 		else:
 			i = web.input()
-			db.insert('post', title=i.title, body=i.body, url="/%s/%s" % (time.strftime("%Y/%m/%d"), i.title.lower()))
+			db.insert('post', title=i.title, body=i.body)
 			raise web.seeother('/')
 
 class edit:
+	
+	editpost_form = form.Form(
+		form.Textbox("title", form.notnull, value='', description="Title:"),
+		form.Textarea("body", form.notnull, value='', description="Text:"),
+		form.Button("submit", type="submit", description="Edit"),
+	)
+	
 	def GET(self, post_id):
-		p = db.select('post', where="id=$post_id", vars=locals())
-		return render.edit(p)
+		posts = db.select('post', where='id=$post_id', vars=locals())
+		form = self.editpost_form
+		return render.edit(posts, form)
 		
 	def POST(self, post_id):
-		i = web.input()
-		n = db.update('post', 'id = '+post_id, title=i.title, body=i.body)
-		raise web.seeother('/')
+		posts = db.select('post', where='id=$post_id', vars=locals())
+		form = self.editpost_form
+		if not form.validates():
+			return render.edit(posts, forms)
+		else:
+			i = web.input()
+			db.update('post', 'id = '+post_id, title=i.title, body=i.body, vars=locals())
+			raise web.seeother('/')
 
 class post:
 	
@@ -106,55 +114,51 @@ class post:
 			description="Text:",
 		),
 	)
-	
-	def GET(self, post_id):
+	def GET(self, post_id, post_title):
 		form = self.addcomment_form
-		posts = db.select('post', where="id=$post_id", vars=locals())
-		comments = db.select('comment', where="belongs_to=$post_id", order="created DESC",vars=locals())
+		posts = db.select('post', where='id=$post_id', vars=locals())
+		comments = db.select('comment', where='belongs_to=$post_id', order='created ASC',vars=locals())
 			
 		return render.post(posts, comments, form, session.user)
 		
 class archive:
 	def GET(self, year, month):
-		posts = db.select('post', where="created like $year and created like $month", order="created DESC", vars={'year':'%'+year+'%', 'month':'%'+month+'%'})					
+		posts = db.select('post', where='created like $year and created like $month', order='created DESC', vars={'year':'%'+year+'%', 'month':'%'+month+'%'})					
 		return render.archive(posts, session.user)
 		
 class delete:
 	def GET(self, post_id):
 		if session.user == 'admin':
-			n = db.delete('post', 'id = '+post_id)
+			db.delete('post', where='id = '+post_id)
+			db.delete('comment', where='belongs_to = '+post_id)
 			raise web.seeother('/')
 		else:
 			return "You don't have access to this."
 
 class comment:
+	def GET(self, comment_id):
+		if session.user == 'admin':
+			db.delete('comment', 'id = '+comment_id)
+			raise web.seeother('/')
+		else:
+			return "You don't have access to this."
+			
 	def POST(self, post_id):
 		form = post.addcomment_form()
 		if not form.validates():
-			p = db.select('post', where="id=$post_id", vars=locals())
-			c = db.select('comment', where="belongs_to=$post_id", vars=locals())
-			return render.post(p,c,form)
+			posts = db.select('post', where='id=$post_id', vars=locals())
+			comments = db.select('comment', where='belongs_to=$post_id', order='created ASC', vars=locals())
+			return render.post(posts, comments, form)
 		else:
 			i = web.input()
-			n = db.insert('comment', belongs_to=post_id, author=i.author, body=i.body)
+			db.insert('comment', belongs_to=post_id, author=i.author, body=i.body)
 			raise web.seeother('/')
-
-class comment_delete:
-	def GET(self, post_id, comment_id):
-		if session.user == 'admin':
-			n = db.delete('comment', 'id ='+comment_id)
-			raise web.seeother('/post/'+post_id)
-		else:
-			return "You don't have access to this."
-		
+			
 class login:
 	
 	login_form = form.Form(
-		form.Textbox("username",
-			form.Validator("Unknown username.", lambda x: x in username),
-			description="Username:"),
-		form.Password("password",
-			description="Password:"),
+		form.Textbox("username", form.Validator("Unknown username.", lambda x: x in username), description="Username:"),
+		form.Password("password", description="Password:"),
 		validators = [form.Validator("Username and password did not match.",
 					lambda i: i.username in username and sha1(i.password).hexdigest() in password)]
 	)

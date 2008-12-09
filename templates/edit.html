@@ -1,7 +1,6 @@
-$def with (posts)
+$def with (posts, form)
 $for post in posts:
-	<form method="post" action="/post/$post.id/edit">
-		<p><label>Title: </label><input type="text" name="title" value="$post.title" /></p>
-		<p><label>Text: </label><textarea name="body" />$post.body</textarea></p><br />
-		<input type="submit" value="Edit" />
+	<form method="post" action="/post/edit/:$post.id">
+		$if not form.valid: <p class="error">Try again</p>
+		$:form.render()
 	</form>
