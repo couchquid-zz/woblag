@@ -2,7 +2,7 @@ $def with (posts, comments, user, next_page, previous_page, monthyear)
 	
 <h1>Woblag</h1>
 $for post in posts:
-	<h2><a href="/post/$post.id">$post.title</a></h2>
+	<h2><a href="$post.url">$post.title</a></h2>
 	<p>Posted at: $post.created</p>
 	<p>Comments</p>
 	<p>$post.body</p>

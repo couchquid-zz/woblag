@@ -1,7 +1,7 @@
 import web
 from web import form
 from hashlib import sha1
-from time import strftime
+import time
 
 render = web.template.render('templates/')
 
@@ -81,7 +81,7 @@ class add:
 			return render.add(p, form)
 		else:
 			i = web.input()
-			n = db.insert('post', title=i.title, body=i.body)
+			db.insert('post', title=i.title, body=i.body, url="/%s/%s" % (time.strftime("%Y/%m/%d"), i.title.lower()))
 			raise web.seeother('/')
 
 class edit:
