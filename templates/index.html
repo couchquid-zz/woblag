@@ -1,5 +1,5 @@
-$def with (posts, comments, user, next_page, previous_page)
-
+$def with (posts, comments, user, next_page, previous_page, monthyear)
+	
 <h1>Woblag</h1>
 $for post in posts:
 	<h2><a href="/post/$post.id">$post.title</a></h2>
@@ -12,7 +12,11 @@ $if next_page != None:
 $if previous_page != None:
 	 <a href="/page/$previous_page">Previous page</a>
 	
-<br />
+<h2>Archives</h2>
+$for title, url in monthyear.items():
+	<a href="/archive/$url">$title</a><br />
+	
+<br /><br />
 $if user == 'admin':
 	<a href="/post/add">Add a new post</a> | 
 	<a href="/logout">Logout</a>

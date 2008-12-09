@@ -1,6 +1,7 @@
 import web
 from web import form
 from hashlib import sha1
+from time import strftime
 
 render = web.template.render('templates/')
 
@@ -42,9 +43,18 @@ class index:
 		next_page = page + 1 if (page + 1) * 5 < num_of_posts else None
 		previous_page = page - 1 if page > 0 else None
 		
-		p = db.select("post", order="created DESC", limit=5, offset=offset)
+		posts = db.select("post", order="created DESC", limit=5, offset=offset)
+		posts_full = db.select('post')
 		comments = db.query("SELECT id, (SELECT COUNT(*) FROM comment WHERE belongs_to = post.id) AS comment_count FROM post;")
-		return render.index(p, comments, session.user, next_page, previous_page)
+		
+		#archives
+		monthyear = {}
+
+		for post in posts_full:
+			if post.created.strftime('%B %Y') not in monthyear:
+				monthyear[post.created.strftime('%B %Y')] = post.created.strftime('%Y/%m')
+		
+		return render.index(posts, comments, session.user, next_page, previous_page, monthyear)
 
 class add:
 	
@@ -99,14 +109,15 @@ class post:
 	
 	def GET(self, post_id):
 		form = self.addcomment_form
-		p = db.select('post', where="id=$post_id", vars=locals())
-		c = db.select('comment', where="belongs_to=$post_id", order="created DESC",vars=locals())
-		return render.post(p,c,form,session.user)
+		posts = db.select('post', where="id=$post_id", vars=locals())
+		comments = db.select('comment', where="belongs_to=$post_id", order="created DESC",vars=locals())
+			
+		return render.post(posts, comments, form, session.user)
 		
 class archive:
 	def GET(self, year, month):
-		p = db.select('post', where="created like $year and created like $month", order="created DESC", vars={'year':'%'+year+'%', 'month':'%'+month+'%'})
-		return render.archive(p, session.user)
+		posts = db.select('post', where="created like $year and created like $month", order="created DESC", vars={'year':'%'+year+'%', 'month':'%'+month+'%'})					
+		return render.archive(posts, session.user)
 		
 class delete:
 	def GET(self, post_id):
