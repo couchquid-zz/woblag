@@ -2,15 +2,15 @@ $def with (posts, comments, user, next_page, previous_page, monthyear)
 	
 <h1>Woblag</h1>
 $for post in posts:
-	<h2><a href="/post/$post.id:$post.slug">$post.title</a></h2>
+	<h2><a href="/post/$post.id-$post.slug">$post.title</a></h2>
 	<p>Posted at: $post.created</p>
 	<p>Comments</p>
 	<p>$post.body</p>
 
 $if next_page != None:
-	<a href="/page/:$next_page">Next page</a>
+	<a href="/page/$next_page">Next page</a>
 $if previous_page != None:
-	 <a href="/page/:$previous_page">Previous page</a>
+	 <a href="/page/$previous_page">Previous page</a>
 	
 <h2>Archives</h2>
 $for title, url in monthyear.items():

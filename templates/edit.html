@@ -1,6 +1,6 @@
 $def with (posts, form)
 $for post in posts:
-	<form method="post" action="/post/edit/:$post.id">
+	<form method="post" action="/post/edit/$post.id">
 		$if not form.valid: <p class="error">Try again</p>
 		$:form.render()
 	</form>

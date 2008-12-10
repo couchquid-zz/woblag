@@ -6,16 +6,16 @@ import re, time, unicodedata
 
 urls = (
 	'/', 'index',
-	'/page/:([0-9])*', 'index',
+	'/page/([0-9])*', 'index',
 	'/archive/(\d+)/(\d+)', 'archive',
 	'/admin/login', 'login',
 	'/admin/logout', 'logout',
 	'/post/add', 'add',
-	'/post/(\d+):([\a-z_]+)', 'post',
-	'/post/edit/:(\d+)', 'edit',
-	'/post/delete/:(\d+)', 'delete',
-	'/post/comment/:(\d+)', 'comment',
-	'/post/delete/comment/:(\d+)', 'comment',
+	'/post/(\d+)-([\a-z_]+)', 'post',
+	'/post/edit/(\d+)', 'edit',
+	'/post/delete/(\d+)', 'delete',
+	'/post/comment/(\d+)', 'comment',
+	'/post/delete/comment/(\d+)', 'comment',
 )
 
 #config
