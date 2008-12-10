@@ -2,11 +2,7 @@
 import web
 from web import form
 from hashlib import sha1
-import time
-import re
-import unicodedata
-
-render = web.template.render('templates/')
+import re, time, unicodedata
 
 urls = (
 	'/', 'index',
@@ -26,15 +22,17 @@ urls = (
 app = web.application(urls, locals())
 db = web.database(dbn='mysql', user='root', pw='', db='woblag_development')
 
-#work around for creating a session
+render = web.template.render('templates/')
+
+username = "admin"
+password = "3da541559918a808c2402bba5012f6c60b27661c"
+
+#workaround for creating a session
 if web.config.get('_session') is None:
 	session = web.session.Session(app, web.session.DiskStore('sessions'), initializer={'user': 'anonymous'})
 	web.config._session = session
 else:
 	session = web.config._session
-
-username = "admin"
-password = "3da541559918a808c2402bba5012f6c60b27661c"
 
 def slugify(value):
 	#remove_list = ["a", "an", "as", "at", "by", "for", "is", "in", "of", "off", "on", "than", "the", "to"];
