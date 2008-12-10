@@ -8,7 +8,7 @@ function confirmDelete(link) {
 </script>
 <h2>Archives</h2>
 $for post in posts:
-	<h2><a href="/post/$post.id:$post.title">$post.title</a></h2>
+	<h2><a href="/post/$post.id:$post.slug">$post.title</a></h2>
 	<h3>$post.created</h3>
 	
 	$if user == 'admin':

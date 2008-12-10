@@ -1,7 +1,10 @@
+# -*- coding: utf8 -*-
 import web
 from web import form
 from hashlib import sha1
 import time
+import re
+import unicodedata
 
 render = web.template.render('templates/')
 
@@ -32,6 +35,15 @@ else:
 
 username = "admin"
 password = "3da541559918a808c2402bba5012f6c60b27661c"
+
+def slugify(value):
+	#remove_list = ["a", "an", "as", "at", "by", "for", "is", "in", "of", "off", "on", "than", "the", "to"];
+	value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
+	#for a in remove_list:
+	#	value = unicode(re.sub(r'\b'+a+r'\b', '', value))
+		
+	value = unicode(re.sub('\s+', '-', value))
+	return value.strip().lower()
 
 class index:
 	def GET(self, page=0):
@@ -76,7 +88,7 @@ class add:
 			return render.add(posts, form)
 		else:
 			i = web.input()
-			db.insert('post', title=i.title, body=i.body)
+			db.insert('post', title=i.title, body=i.body, slug=slugify(i.title))
 			raise web.seeother('/')
 
 class edit:
@@ -105,20 +117,14 @@ class edit:
 class post:
 	
 	addcomment_form = form.Form(
-		form.Textbox("author",
-			form.notnull,
-			description="Name:",
-		),
-		form.Textarea("body",
-			form.notnull,
-			description="Text:",
-		),
+		form.Textbox("author", form.notnull, description="Name:"),
+		form.Textarea("body", form.notnull, description="Text:"),
 	)
+	
 	def GET(self, post_id, post_title):
 		form = self.addcomment_form
 		posts = db.select('post', where='id=$post_id', vars=locals())
 		comments = db.select('comment', where='belongs_to=$post_id', order='created ASC',vars=locals())
-			
 		return render.post(posts, comments, form, session.user)
 		
 class archive:
