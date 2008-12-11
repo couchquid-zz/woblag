@@ -1,0 +1,15 @@
+$def with (posts, user)
+<script style="text/javascript">
+function confirmDelete(link) {
+    if (confirm("Are you sure you want to delete this?")) {
+        document.location = link;
+    } 
+}
+</script>
+<h2>Search</h2>
+$for post in posts:
+	<h2><a href="/post/$post.id-$post.slug">$post.title</a></h2>
+	<h3>$post.created</h3>
+	
+	$if user == 'admin':
+		<h5><a href="/post/edit/$post.id">Edit</a> - <a href="#" onClick="confirmDelete('/post/delete/$post.id')">Delete</a></h5>

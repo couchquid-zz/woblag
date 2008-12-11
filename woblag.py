@@ -14,6 +14,7 @@ urls = (
 	'/post/(\d+)-([\a-z_]+)', 'post',
 	'/post/edit/(\d+)', 'edit',
 	'/post/delete/(\d+)', 'delete',
+	'/post/search', 'search',
 	'/post/comment/(\d+)', 'comment',
 	'/post/delete/comment/(\d+)', 'comment',
 )
@@ -42,6 +43,11 @@ def slugify(value):
 		
 	value = unicode(re.sub('\s+', '-', value))
 	return value.strip().lower()
+	
+searchpost_form = form.Form(
+	form.Textbox("string", form.notnull, description="Search"),
+	form.Button("submit", type="submit", description="Search"),
+)
 
 class index:
 	def GET(self, page=0):
@@ -64,7 +70,8 @@ class index:
 			if post.created.strftime('%B %Y') not in monthyear:
 				monthyear[post.created.strftime('%B %Y')] = post.created.strftime('%Y/%m')
 		
-		return render.index(posts, comments, session.user, next_page, previous_page, monthyear)
+		form = searchpost_form
+		return render.index(posts, comments, session.user, next_page, previous_page, monthyear, form)
 
 class add:
 	
@@ -129,6 +136,13 @@ class archive:
 	def GET(self, year, month):
 		posts = db.select('post', where='created like $year and created like $month', order='created DESC', vars={'year':'%'+year+'%', 'month':'%'+month+'%'})					
 		return render.archive(posts, session.user)
+		
+class search:
+	def POST(self):
+		i = web.input()
+		string = i.string
+		posts = db.select('post', where='title like $string', order='created DESC', vars={'string':'%'+string+'%'})
+		return render.search(posts, session.user)
 		
 class delete:
 	def GET(self, post_id):
