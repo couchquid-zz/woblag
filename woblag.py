@@ -36,10 +36,7 @@ else:
 	session = web.config._session
 
 def slugify(value):
-	#remove_list = ["a", "an", "as", "at", "by", "for", "is", "in", "of", "off", "on", "than", "the", "to"];
 	value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
-	#for a in remove_list:
-	#	value = unicode(re.sub(r'\b'+a+r'\b', '', value))
 		
 	value = unicode(re.sub('\s+', '-', value))
 	return value.strip().lower()
