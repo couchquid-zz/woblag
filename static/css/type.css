@@ -1,0 +1,65 @@
+html { font: 100.01% sans-serif; }
+body { font-size: 1em; }
+
+body h1 {
+	font-size: 1.7em;
+	font-weight: bold;
+}
+
+body h2 {
+    font-size: 1.4em;
+	font-weight: bold;
+}
+
+body h3 {
+    font-size: 1.1em;
+	font-weight: bold;
+}
+
+body h4 {
+    font-size: 0.9em;
+}
+
+body h5 {
+    font-size: 0.7em;
+}
+
+body h6 {
+    font-size: 0.5em;
+}
+
+body a {
+    color: black;
+}
+
+body p {
+    font-size: .8em;
+}
+
+#header h1 a {
+	text-decoration: none;
+}
+
+#body p.postdate {
+	font-weight: bold;
+}
+#body p.postfooter {
+	color: #000;
+	font-size: .7em;
+}
+
+#rightmenu ul {
+	list-style-type: square;
+}
+
+#rightmenu ul li {
+	font-size: .7em;
+}
+
+.postdate {
+	font-size: .7em;
+}
+
+.bold {
+	font-weight: bold;
+}

@@ -23,7 +23,7 @@ urls = (
 app = web.application(urls, locals())
 db = web.database(dbn='mysql', user='root', pw='', db='woblag_development')
 
-render = web.template.render('templates/')
+render = web.template.render('templates/', base='layout')
 
 username = "admin"
 password = "3da541559918a808c2402bba5012f6c60b27661c"
@@ -42,8 +42,7 @@ def slugify(value):
 	return value.strip().lower()
 	
 searchpost_form = form.Form(
-	form.Textbox("string", form.notnull, description="Search"),
-	form.Button("submit", type="submit", description="Search"),
+	form.Textbox("string", form.notnull, description=""),
 )
 
 class index:
@@ -124,10 +123,18 @@ class post:
 	)
 	
 	def GET(self, post_id, post_title):
-		form = self.addcomment_form
 		posts = db.select('post', where='id=$post_id', vars=locals())
 		comments = db.select('comment', where='belongs_to=$post_id', order='created ASC',vars=locals())
-		return render.post(posts, comments, form, session.user)
+		posts_full = db.select('post', vars=locals())
+		#archives
+		monthyear = {}
+
+		for post in posts_full:
+			if post.created.strftime('%B %Y') not in monthyear:
+				monthyear[post.created.strftime('%B %Y')] = post.created.strftime('%Y/%m')
+		
+		form = self.addcomment_form
+		return render.post(posts, comments, form, session.user, monthyear)
 		
 class archive:
 	def GET(self, year, month):
@@ -159,12 +166,12 @@ class comment:
 			return "You don't have access to this."
 			
 	def POST(self, post_id):
-		form = post.addcomment_form()
-		if not form.validates():
-			posts = db.select('post', where='id=$post_id', vars=locals())
-			comments = db.select('comment', where='belongs_to=$post_id', order='created ASC', vars=locals())
-			return render.post(posts, comments, form)
-		else:
+		#form = post.addcomment_form()
+		#if not form.validates():
+		#	posts = db.select('post', where='id=$post_id', vars=locals())
+		#	comments = db.select('comment', where='belongs_to=$post_id', order='created ASC', vars=locals())
+		#	return render.post(posts, comments, form, session.user)
+		#else:
 			i = web.input()
 			db.insert('comment', belongs_to=post_id, author=i.author, body=i.body)
 			raise web.seeother('/')

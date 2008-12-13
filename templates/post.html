@@ -1,4 +1,4 @@
-$def with (posts, comments, form, user)
+$def with (posts, comments, form, user, monthyear)
 <script style="text/javascript">
 function confirmDelete(link) {
     if (confirm("Are you sure you want to delete this?")) {
@@ -6,25 +6,58 @@ function confirmDelete(link) {
     } 
 }
 </script>
-$for post in posts:
-	<h2>$post.title</h2>
-	<h3>$post.created</h3>
-	<p>$post.body</p>
+
+<div id="body">
+	$for post in posts:
+		<h3><a href="/post/$post.id-$post.slug">$post.title</a></h3>
+		<p class="postdate">$post.created</p>
+		<p>$post.body</p>
+		<p class="postfooter">$post.created | Comments(0)</p>
 	
-	$if user == 'admin':
-		<h5><a href="/post/edit/$post.id">Edit</a> - <a href="#" onClick="confirmDelete('/post/delete/$post.id')">Delete</a></h5>
-
-	<h3>Comments for this post</h3>
-	$for comment in comments:
-		<h4>$comment.author
 		$if user == 'admin':
-			 - <a href="#" onClick="confirmDelete('/post/delete/comment/$comment.id')">[Delete]</a></h4>
-		<p>$comment.created</p>
-		<p>$comment.body</p>
-
-	<h3>Comment on this post</h3>
-	<form action="/post/comment/$post.id" method="post">
-		$if not form.valid: <p class="error">Try again</p>
-		$:form.render()
-		<input type="submit" value="Post comment" />
-	</form>
+			<h5><a href="/post/edit/$post.id">Edit</a> - <a href="#" onClick="confirmDelete('/post/delete/$post.id')">Delete</a></h5>
+		<br />
+		<h3>Comments</h3>
+		<br />
+		$for comment in comments:
+			<h4>$comment.author
+			$if user == 'admin':
+				 - <a href="#" onClick="confirmDelete('/post/delete/comment/$comment.id')">[Delete]</a></h4>
+			$else:
+				</h4>
+			<p class="postdate">$comment.created</p>
+			<p>$comment.body</p>
+		
+		<form action="/post/comment/$post.id" method="post">
+			<p>
+				<label for="author">Name: </label>
+				<input type="input" name="author" size="30" /><br />
+			</p>
+			<p>
+				<textarea name="body" rows="15" cols="50"></textarea><br />
+			</p>
+			<input type="submit" value="Post comment" />
+		</form>
+</div>
+<div id="rightmenu">
+	<h5 class="first">Search</h5>
+		<form method="post" id="searchform" action="/post/search">
+			<input type="text" id="string" name="string" />
+			<input type="submit" class="submit" value="Search" />
+		</form>
+	<h5>Archive</h5>
+	$for title, url in monthyear.items():
+		<ul>
+			<li><a href="/archive/$url">$title</a></li>
+		</ul>
+	<h5>RSS</h5>
+	<h5 class="rss"><img id="rss" src="/static/images/rss.png" alt="Picture of the RSS icon" />Posts</h5>
+	<h5>Admin</h5>
+	<ul>
+	$if user == 'admin':
+		<li><a href="/post/add" class="admin">Add a new post</a></li>
+		<li><a href="/admin/logout" class="admin">Logout</a></li>
+	$else:
+		<li><a href="/admin/login" class="admin">Login</a></li>
+	</ul>
+</div>

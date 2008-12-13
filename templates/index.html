@@ -1,28 +1,36 @@
 $def with (posts, comments, user, next_page, previous_page, monthyear, form)
-	
-<h1>Woblag</h1>
-$for post in posts:
-	<h2><a href="/post/$post.id-$post.slug">$post.title</a></h2>
-	<p>Posted at: $post.created</p>
-	<p>Comments</p>
-	<p>$post.body</p>
 
-$if next_page != None:
-	<a href="/page/$next_page">Next page</a>
-$if previous_page != None:
-	 <a href="/page/$previous_page">Previous page</a>
+<div id="body">
+	$for post in posts:
+		<h3><a href="/post/$post.id-$post.slug">$post.title</a></h3>
+		<p class="postdate">$post.created</p>
+		<p>$post.body</p>
+		<p class="postfooter">$post.created | Comments(0)</p>
 	
-<h2>Archives</h2>
-$for title, url in monthyear.items():
-	<a href="/archive/$url">$title</a><br />
-	
-<br />
-<form method="post" action="/post/search">
-	$:form.render()
-</form>
-<br />
-$if user == 'admin':
-	<a href="/post/add">Add a new post</a> | 
-	<a href="/admin/logout">Logout</a>
-$else:
-	<a href="/admin/login">Login</a>
+	$if next_page != None:
+		<a href="/page/$next_page">Next page</a>
+	$if previous_page != None:
+		 <a href="/page/$previous_page">Previous page</a>
+</div>
+<div id="rightmenu">
+	<h5 class="first">Search</h5>
+		<form method="post" id="searchform" action="/post/search">
+			<input type="text" id="string" name="string" />
+			<input type="submit" class="submit" value="Search" />
+		</form>
+	<h5>Archive</h5>
+	$for title, url in monthyear.items():
+		<ul>
+			<li><a href="/archive/$url">$title</a></li>
+		</ul>
+	<h5>RSS</h5>
+	<h5 class="rss"><img id="rss" src="/static/images/rss.png" alt="Picture of the RSS icon" />Posts</h5>
+	<h5>Admin</h5>
+	<ul>
+	$if user == 'admin':
+		<li><a href="/post/add" class="admin">Add a new post</a></li>
+		<li><a href="/admin/logout" class="admin">Logout</a></li>
+	$else:
+		<li><a href="/admin/login" class="admin">Login</a></li>
+	</ul>
+</div>

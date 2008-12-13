@@ -1,0 +1,80 @@
+#container {
+    width: 800px;
+	margin: 0px auto 0px auto;
+}
+
+#header {
+	border-bottom: 1px solid gray;
+	margin-top: 10px;
+	height: 60px;
+}
+
+#header h1 {
+	float: left;
+	padding-top: 25px;
+}
+
+#header h4 {
+	margin-left: 115px;
+	padding-top: 35px;
+}
+
+#content {
+	background-color: #FFF;
+	margin-top: 20px;
+}
+
+#body {
+	background-color: #FFF;
+	width: 75%;
+	height: 500px;
+	float: left;
+}
+
+#body p {
+	margin: 10px 0px 10px 0px;
+}
+
+#body p.postdate {
+	margin: 0px;
+}
+
+#body p.postfooter {
+	background-color: #CBF3C7;
+	border: 1px solid #4F4E57;
+	padding: 3px;
+	margin-bottom: 20px;
+	width: 181px;
+}
+
+#rightmenu {
+	width: 20%;
+	height: 200px;
+	float: right;
+}
+
+#rightmenu h5 {
+	margin-top: 10px;
+	font-weight: bold;
+}
+
+#rightmenu h5.first {
+	margin-top: 0px;
+}
+
+#rightmenu h5.rss {
+	margin-top: 0px;
+	font-weight: normal;
+}
+
+#rightmenu ul li {
+	margin-left: 20px;
+}
+
+#rightmenu img#rss {
+	margin-right: 2px;
+}
+
+.bold {
+	margin-bottom: 2px;
+}
