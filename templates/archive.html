@@ -6,10 +6,9 @@ function confirmDelete(link) {
     } 
 }
 </script>
-<h2>Archives</h2>
-$for post in posts:
-	<h2><a href="/post/$post.id-$post.slug">$post.title</a></h2>
-	<h3>$post.created</h3>
-	
-	$if user == 'admin':
-		<h5><a href="/post/edit/$post.id">Edit</a> - <a href="#" onClick="confirmDelete('/post/delete/$post.id')">Delete</a></h5>
+<div id="archive">
+	<h2 class="first">Archives</h2>
+	$for post in posts:
+		<h3><a href="/post/$post.id-$post.slug">$post.title</a></h3>
+		<h5>$post.created</h5>
+</div>
